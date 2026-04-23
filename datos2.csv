@@ -1,0 +1,61 @@
+codigo,nombre,materia,nota
+20240001,Ana Torres,Matematicas,8.5
+20240001,Ana Torres,Programacion,9.0
+20240001,Ana Torres,Historia,7.8
+20240001,Ana Torres,Base de Datos,8.7
+20240002,Luis Gomez,Matematicas,4.5
+20240002,Luis Gomez,Programacion,5.2
+20240002,Luis Gomez,Historia,6.0
+20240002,Luis Gomez,Redes,5.8
+20240003,Carla Ruiz,Base de Datos,10.0
+20240003,Carla Ruiz,Redes,9.4
+20240003,Carla Ruiz,Arquitectura de Software,9.1
+20240003,Carla Ruiz,Programacion,9.6
+20240004,Diego Perez,Matematicas,7.2
+20240004,Diego Perez,Programacion,8.1
+20240004,Diego Perez,Base de Datos,7.9
+20240004,Diego Perez,Redes,8.3
+20240005,Sofia Martinez,Historia,9.2
+20240005,Sofia Martinez,Matematicas,8.8
+20240005,Sofia Martinez,Programacion,9.1
+20240005,Sofia Martinez,Base de Datos,8.9
+20240006,Jorge Ramirez,Programacion,6.7
+20240006,Jorge Ramirez,Redes,7.0
+20240006,Jorge Ramirez,Base de Datos,6.9
+20240006,Jorge Ramirez,Matematicas,6.1
+20240007,Valeria Castro,Arquitectura de Software,8.4
+20240007,Valeria Castro,Base de Datos,8.8
+20240007,Valeria Castro,Programacion,8.6
+20240007,Valeria Castro,Redes,8.1
+20240008,Miguel Herrera,Matematicas,5.9
+20240008,Miguel Herrera,Historia,6.5
+20240008,Miguel Herrera,Programacion,6.2
+20240008,Miguel Herrera,Redes,6.8
+20240009,Elena Morales,Historia,8.0
+20240009,Elena Morales,Base de Datos,8.3
+20240009,Elena Morales,Programacion,7.7
+20240009,Elena Morales,Redes,8.1
+20240010,Pablo Navarro,Matematicas,9.3
+20240010,Pablo Navarro,Programacion,9.5
+20240010,Pablo Navarro,Arquitectura de Software,9.0
+20240010,Pablo Navarro,Base de Datos,9.1
+20240011,Lucia Fernandez,Redes,7.4
+20240011,Lucia Fernandez,Base de Datos,7.8
+20240011,Lucia Fernandez,Programacion,8.0
+20240011,Lucia Fernandez,Historia,7.6
+20240012,Andres Silva,Matematicas,6.8
+20240012,Andres Silva,Programacion,7.1
+20240012,Andres Silva,Base de Datos,7.3
+20240012,Andres Silva,Redes,6.9
+20240013,Paula Mendoza,Historia,9.4
+20240013,Paula Mendoza,Matematicas,8.7
+20240013,Paula Mendoza,Programacion,9.0
+20240013,Paula Mendoza,Redes,8.8
+20240014,Ricardo Vega,Arquitectura de Software,7.5
+20240014,Ricardo Vega,Programacion,7.9
+20240014,Ricardo Vega,Base de Datos,8.2
+20240014,Ricardo Vega,Redes,7.7
+20240015,Camila Soto,Matematicas,8.9
+20240015,Camila Soto,Programacion,9.2
+20240015,Camila Soto,Historia,8.6
+20240015,Camila Soto,Base de Datos,9.0

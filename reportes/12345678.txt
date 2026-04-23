@@ -1,0 +1,12 @@
+REPORTE ACADEMICO INDIVIDUAL
+============================================================
+Codigo: 12345678
+Nombre: Jose
+Fecha de generacion: 2026-03-27 19:21:37
+
+Materias registradas:
+- informatica: 3.00
+- matematicas: 6.00
+
+Promedio general: 4.50
+Estado academico: Reprobado

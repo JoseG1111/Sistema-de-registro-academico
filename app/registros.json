@@ -1,0 +1,177 @@
+{
+  "guardado_en": "2026-03-27 21:17:23",
+  "estudiantes": [
+    {
+      "codigo": "11111111",
+      "nombre": "jose",
+      "notas": {
+        "programación": 10.0
+      }
+    },
+    {
+      "codigo": "15432378",
+      "nombre": "gsgsdfgsds",
+      "notas": {
+        "programación": 7.0
+      }
+    },
+    {
+      "codigo": "20240001",
+      "nombre": "Ana Torres",
+      "notas": {
+        "Matematicas": 8.5,
+        "Programacion": 9.0,
+        "Historia": 7.8,
+        "Base de Datos": 8.7
+      }
+    },
+    {
+      "codigo": "20240002",
+      "nombre": "Luis Gomez",
+      "notas": {
+        "Matematicas": 4.5,
+        "Programacion": 5.2,
+        "Historia": 6.0,
+        "Redes": 5.8
+      }
+    },
+    {
+      "codigo": "20240003",
+      "nombre": "Carla Ruiz",
+      "notas": {
+        "Base de Datos": 10.0,
+        "Redes": 9.4,
+        "Arquitectura de Software": 9.1,
+        "Programacion": 9.6
+      }
+    },
+    {
+      "codigo": "20240004",
+      "nombre": "Diego Perez",
+      "notas": {
+        "Matematicas": 7.2,
+        "Programacion": 8.1,
+        "Base de Datos": 7.9,
+        "Redes": 8.3
+      }
+    },
+    {
+      "codigo": "20240005",
+      "nombre": "Sofia Martinez",
+      "notas": {
+        "Historia": 9.2,
+        "Matematicas": 8.8,
+        "Programacion": 9.1,
+        "Base de Datos": 8.9
+      }
+    },
+    {
+      "codigo": "20240006",
+      "nombre": "Jorge Ramirez",
+      "notas": {
+        "Programacion": 6.7,
+        "Redes": 7.0,
+        "Base de Datos": 6.9,
+        "Matematicas": 6.1
+      }
+    },
+    {
+      "codigo": "20240007",
+      "nombre": "Valeria Castro",
+      "notas": {
+        "Arquitectura de Software": 8.4,
+        "Base de Datos": 8.8,
+        "Programacion": 8.6,
+        "Redes": 8.1
+      }
+    },
+    {
+      "codigo": "20240008",
+      "nombre": "Miguel Herrera",
+      "notas": {
+        "Matematicas": 5.9,
+        "Historia": 6.5,
+        "Programacion": 6.2,
+        "Redes": 6.8
+      }
+    },
+    {
+      "codigo": "20240009",
+      "nombre": "Elena Morales",
+      "notas": {
+        "Historia": 8.0,
+        "Base de Datos": 8.3,
+        "Programacion": 7.7,
+        "Redes": 8.1
+      }
+    },
+    {
+      "codigo": "20240010",
+      "nombre": "Pablo Navarro",
+      "notas": {
+        "Matematicas": 9.3,
+        "Programacion": 9.5,
+        "Arquitectura de Software": 9.0,
+        "Base de Datos": 9.1
+      }
+    },
+    {
+      "codigo": "20240011",
+      "nombre": "Lucia Fernandez",
+      "notas": {
+        "Redes": 7.4,
+        "Base de Datos": 7.8,
+        "Programacion": 8.0,
+        "Historia": 7.6
+      }
+    },
+    {
+      "codigo": "20240012",
+      "nombre": "Andres Silva",
+      "notas": {
+        "Matematicas": 6.8,
+        "Programacion": 7.1,
+        "Base de Datos": 7.3,
+        "Redes": 6.9
+      }
+    },
+    {
+      "codigo": "20240013",
+      "nombre": "Paula Mendoza",
+      "notas": {
+        "Historia": 9.4,
+        "Matematicas": 8.7,
+        "Programacion": 9.0,
+        "Redes": 8.8
+      }
+    },
+    {
+      "codigo": "20240014",
+      "nombre": "Ricardo Vega",
+      "notas": {
+        "Arquitectura de Software": 7.5,
+        "Programacion": 7.9,
+        "Base de Datos": 8.2,
+        "Redes": 7.7
+      }
+    },
+    {
+      "codigo": "20240015",
+      "nombre": "Camila Soto",
+      "notas": {
+        "Matematicas": 8.9,
+        "Programacion": 9.2,
+        "Historia": 8.6,
+        "Base de Datos": 9.0
+      }
+    },
+    {
+      "codigo": "22222222",
+      "nombre": "joyce",
+      "notas": {
+        "matematicas": 5.0,
+        "español": 7.0
+      }
+    }
+  ]
+}

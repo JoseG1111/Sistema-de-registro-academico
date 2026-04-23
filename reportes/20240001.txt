@@ -1,0 +1,13 @@
+REPORTE ACADEMICO INDIVIDUAL
+============================================================
+Codigo: 20240001
+Nombre: Ana Torres
+Fecha de generacion: 2026-03-27 18:42:28
+
+Materias registradas:
+- Historia: 7.80
+- Matematicas: 8.50
+- Programacion: 9.00
+
+Promedio general: 8.43
+Estado academico: Aprobado

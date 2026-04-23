@@ -1,0 +1,101 @@
+Sistema de Registro Académico
+Objetivo
+Desarrollar un sistema de registro académico en Python que, mediante Programación Orientada a Objetos y arquitectura MVC, permita gestionar estudiantes y notas con validaciones,
+cargar información desde CSV y generar reportes individuales en texto, cumpliendo las buenas prácticas de PEP 8 y PEP 257.
+Contexto
+Una institución educativa requiere desarrollar un sistema básico de gestión académica que
+permita registrar estudiantes, asignarles notas por materia y generar reportes individuales
+en archivos de texto. El sistema debe ser desarrollado en Python aplicando los principios
+de la Programación Orientada a Objetos, el patrón de arquitectura MVC (Modelo-VistaControlador) y siguiendo los estándares de estilo PEP 8 y documentación PEP 257.
+Problemática
+El departamento académico actualmente lleva el registro de estudiantes y notas de forma
+manual en hojas de papel, lo que genera pérdida de información, errores en el cálculo de
+promedios y dificultad para consultar el historial de un estudiante. Se necesita una solución
+de software que centralice esta información, garantice la integridad de los datos mediante
+validaciones, separe las responsabilidades del sistema en capas bien definidas y permita
+generar reportes automáticos por estudiante.
+
+Arquitectura requerida — MVC
+El estudiante debe comprender y aplicar el patrón MVC antes de escribir código. Cada capa
+tiene una responsabilidad única e irremplazable:
+Modelo (Model)
+Representa los datos y las reglas del negocio. No sabe nada de cómo se muestra la información
+ni de quién la solicita. Aquí vive la clase Estudiante con sus atributos, validaciones y lógica
+de dominio.
+Vista (View)
+Se encarga exclusivamente de mostrar información al usuario y de recoger su entrada. No
+realiza cálculos ni accede directamente a los datos. En este sistema la vista trabaja sobre
+consola.
+Controlador (Controller)
+Es el intermediario: recibe las acciones del usuario desde la vista, las delega al modelo y le
+indica a la vista qué mostrar con el resultado. Nunca contiene lógica de negocio ni código de
+presentación.
+Requerimientos funcionales
+RF-01 — Gestión del estudiante
+El sistema debe permitir crear un estudiante con nombre y código único. El nombre no puede
+estar vacío y el código debe tener exactamente 8 caracteres. Ambos atributos deben estar
+encapsulados y accesibles mediante propiedades con validación.
+RF-02 — Registro de notas por materia
+Cada estudiante puede tener notas asociadas a diferentes materias. Una nota debe estar en
+el rango de 0.0 a 10.0. No se puede registrar una nota para una materia que ya fue calificada.
+2
+El sistema debe lanzar excepciones descriptivas cuando se viole alguna regla.
+RF-03 — Cálculo de promedio y estado académico
+El sistema debe calcular el promedio general del estudiante sobre todas sus materias. Con
+base en ese promedio debe determinar su estado: Aprobado si el promedio es mayor o igual
+a 6.0, Reprobado en caso contrario. Si el estudiante no tiene notas registradas, el promedio
+debe ser 0.0 y el estado Pendiente.
+RF-04 — Generación de reporte individual
+El sistema debe generar un archivo de texto plano con el reporte académico del estudiante.
+El archivo debe guardarse en una carpeta llamada reportes/ dentro del directorio del script,
+usando pathlib. El nombre del archivo debe seguir el patrón codigo_estudiante.txt. Si
+la carpeta no existe, debe crearse automáticamente.
+RF-05 — Carga de datos desde archivo
+El sistema debe poder leer un archivo .csv con la siguiente estructura:
+codigo,nombre,materia,nota
+20240001,Ana Torres,Matemáticas,8.5
+20240001,Ana Torres,Programación,9.0
+20240002,Luis Gómez,Matemáticas,4.5
+A partir de este archivo se deben construir los objetos Estudiante con sus notas ya cargadas.
+Restricciones técnicas
+El código debe estar organizado en al menos dos archivos: estudiante.py con la clase y
+main.py con la lógica de ejecución.
+Todos los atributos sensibles deben ser privados (__atributo).
+Todos los métodos deben tener docstring en formato PEP 257.
+Todos los parámetros y retornos deben tener anotaciones de tipo.
+3
+El manejo de errores debe usar try/except con excepciones específicas, nunca except
+Exception genérico.
+Está prohibido el uso de librerías externas — solo módulos de la biblioteca estándar de
+Python.
+Forma de entrega
+El estudiante debe entregar una carpeta comprimida en .zip con la siguiente estructura:
+apellido_nombre_poo/
+|-- models/
+| |-- __init__.py
+| |-- estudiante.py
+|-- views/
+| |-- __init__.py
+| |-- consola_view.py
+|-- controllers/
+| |-- __init__.py
+| |-- estudiante_controller.py
+|-- datos.csv
+|-- main.py
+|-- reportes/
+| |-- (archivos generados al ejecutar)
+|-- README.txt
+El archivo README.txt debe explicar brevemente cómo ejecutar el programa, qué hace cada
+archivo y un diagrama de texto simple que muestre el flujo MVC del sistema. El programa
+debe poder ejecutarse directamente con python main.py sin errores.
+4
+Criterios de evaluación
+Criterio Porcentaje
+Aplicación correcta del patrón MVC (separación de responsabilidades)
+25 %
+Encapsulamiento correcto con @property 15 %
+Validaciones y manejo de excepciones 15 %
+Cumplimiento PEP 8 (nombres, espacios, estructura) 15 %
+Cumplimiento PEP 257 (docstrings en todos los métodos) 10 %
+Lectura del CSV y construcción de objetos 10 %
+Generación correcta de reportes con pathlib 10 %

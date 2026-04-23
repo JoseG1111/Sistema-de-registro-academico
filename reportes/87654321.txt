@@ -1,0 +1,12 @@
+REPORTE ACADEMICO INDIVIDUAL
+============================================================
+Codigo: 87654321
+Nombre: gabriel
+Fecha de generacion: 2026-03-27 19:21:37
+
+Materias registradas:
+- informatica: 2.00
+- matematicas: 10.00
+
+Promedio general: 6.00
+Estado academico: Aprobado

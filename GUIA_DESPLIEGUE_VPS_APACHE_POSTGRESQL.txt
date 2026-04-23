@@ -1,0 +1,446 @@
+GUIA COMPLETA DE DESPLIEGUE
+Proyecto: Sistema de registro academico
+Stack real del proyecto: Flask + Gunicorn + Apache2 + PostgreSQL
+Escenario: Ubuntu Server en VirtualBox (VPS local)
+
+========================================================================
+0) QUE ES ESTA APLICACION Y COMO SE DESPLIEGA
+========================================================================
+
+Esta aplicacion es Python Flask (no es PHP, no es Node, no es Java).
+El despliegue correcto para ESTE proyecto es:
+
+Navegador -> Apache2 (puerto 80) -> Gunicorn (127.0.0.1:8000) -> Flask -> PostgreSQL
+
+Por que asi:
+- Apache2 expone la web al navegador.
+- Gunicorn ejecuta la app Flask en segundo plano.
+- PostgreSQL guarda los datos.
+- El proyecto YA trae:
+  - wsgi.py (entrypoint WSGI)
+  - requirements.txt
+  - .env.example
+  - deploy/registro-academico.service
+  - deploy/apache-registro-academico.conf
+
+No necesitas:
+- PHP
+- Node.js
+- Java/Tomcat
+- mod_wsgi
+
+========================================================================
+1) PRERREQUISITOS
+========================================================================
+
+1. Tu VM Ubuntu Server encendida en VirtualBox.
+2. Usuario con sudo en Ubuntu.
+3. Tu proyecto funcionando localmente en tu PC (ya lo tienes).
+4. Conectividad entre tu PC y la VM.
+
+Recomendacion de red en VirtualBox:
+- Ideal: Bridged Adapter (adaptador puente), para tener IP propia de la VM.
+- Si usas NAT, crea redireccion de puertos:
+  - SSH host 2222 -> guest 22
+  - HTTP host 8080 -> guest 80
+
+========================================================================
+2) FASE A - PREPARAR UBUNTU VPS
+========================================================================
+
+Todos estos comandos se ejecutan EN LA VM UBUNTU.
+
+2.1 Actualizar e instalar paquetes base
+--------------------------------------
+Comando:
+  sudo apt update
+  sudo apt install -y python3 python3-venv python3-pip apache2 postgresql postgresql-contrib openssh-server ufw
+
+Que hace:
+- Instala Python, Apache2, PostgreSQL, SSH y firewall.
+
+Verificacion:
+  python3 --version
+  apache2 -v
+  psql --version
+
+2.2 Levantar y habilitar servicios
+----------------------------------
+Comando:
+  sudo systemctl enable --now ssh
+  sudo systemctl enable --now apache2
+  sudo systemctl enable --now postgresql
+  sudo systemctl status ssh apache2 postgresql --no-pager
+
+Que hace:
+- Inicia servicios ahora y los deja auto-arranque tras reboot.
+
+Que esperar:
+- En cada servicio: Active: active (running)
+
+2.3 Firewall basico
+-------------------
+Comando:
+  sudo ufw allow OpenSSH
+  sudo ufw allow 'Apache Full'
+  sudo ufw enable
+  sudo ufw status
+
+Que hace:
+- Permite SSH y HTTP/HTTPS.
+- Bloquea lo demas.
+
+========================================================================
+3) FASE B - SUBIR CODIGO A LA VM
+========================================================================
+
+3.1 Desde tu PC local, copiar proyecto por SCP
+----------------------------------------------
+Si usas Bridged (IP real de VM):
+  scp -r "/home/admin/Documents/UNIVERSIDAD/UNIVERSIDAD/Linea de enfasis/Sistema de registro academico" <usuario_vm>@<IP_VM>:/home/<usuario_vm>/registro-academico
+
+Si usas NAT con SSH en puerto 2222:
+  scp -P 2222 -r "/home/admin/Documents/UNIVERSIDAD/UNIVERSIDAD/Linea de enfasis/Sistema de registro academico" <usuario_vm>@127.0.0.1:/home/<usuario_vm>/registro-academico
+
+Que hace:
+- Copia la carpeta del proyecto desde tu PC al Ubuntu VPS.
+
+3.2 Mover al path final del servicio
+------------------------------------
+Comandos EN VM:
+  sudo mkdir -p /opt/registro-academico
+  sudo cp -a /home/<usuario_vm>/registro-academico/. /opt/registro-academico/
+  sudo rm -rf /opt/registro-academico/.venv
+  sudo mkdir -p /opt/registro-academico/storage/reportes
+  sudo chown -R www-data:www-data /opt/registro-academico
+  sudo find /opt/registro-academico -type d -exec chmod 755 {} \;
+  sudo find /opt/registro-academico -type f -exec chmod 644 {} \;
+  sudo chmod -R 775 /opt/registro-academico/storage
+
+Que hace:
+- Deja el proyecto en la ruta esperada por systemd y Apache.
+- Ajusta permisos para que la app (www-data) pueda escribir reportes.
+
+Verificacion:
+  ls -la /opt/registro-academico
+  ls -ld /opt/registro-academico/storage /opt/registro-academico/storage/reportes
+
+========================================================================
+4) FASE C - PREPARAR POSTGRESQL EN LA VM
+========================================================================
+
+4.1 Crear usuario y base de datos
+---------------------------------
+Comandos EN VM:
+  sudo -u postgres psql -c "CREATE USER registro_user WITH PASSWORD 'cambia-esta-clave';"
+  sudo -u postgres psql -c "CREATE DATABASE registro_academico OWNER registro_user;"
+
+Que hace:
+- Crea el usuario y la DB que usara la app.
+
+Verificacion:
+  sudo -u postgres psql -lqt | grep registro_academico
+  sudo -u postgres psql -c "\du" | grep registro_user
+
+IMPORTANTE:
+- Usa una clave fuerte real en produccion.
+- Si usas caracteres raros en la clave (@ : / # ?), hay que URL-encodear DATABASE_URL.
+
+========================================================================
+5) FASE D - CONFIGURAR LA APP (ENV + DEPENDENCIAS PYTHON)
+========================================================================
+
+5.1 Crear entorno virtual en el VPS
+-----------------------------------
+Comandos EN VM:
+  cd /opt/registro-academico
+  sudo -u www-data python3 -m venv .venv
+  sudo -u www-data /opt/registro-academico/.venv/bin/pip install -r /opt/registro-academico/requirements.txt
+
+Que hace:
+- Crea entorno Python aislado y instala Flask/Gunicorn/Psycopg.
+
+Verificacion:
+  sudo -u www-data /opt/registro-academico/.venv/bin/python --version
+  sudo -u www-data /opt/registro-academico/.venv/bin/pip list | rg "Flask|gunicorn|psycopg"
+
+5.2 Crear archivo .env productivo
+---------------------------------
+Comandos EN VM:
+  cd /opt/registro-academico
+  sudo cp .env.example .env
+  sudo nano .env
+
+Contenido recomendado para ESTE proyecto:
+
+  DATABASE_URL=postgresql://registro_user:cambia-esta-clave@127.0.0.1:5432/registro_academico
+  APP_HOST=127.0.0.1
+  APP_PORT=8000
+  APP_DEBUG=false
+  REPORTS_DIR=storage/reportes
+  BOOTSTRAP_LEGACY_DATA=false
+  LEGACY_SNAPSHOT_PATH=app/registros.json
+  GUNICORN_BIND=127.0.0.1:8000
+  WEB_CONCURRENCY=2
+  GUNICORN_THREADS=4
+  GUNICORN_TIMEOUT=60
+
+Que significa BOOTSTRAP_LEGACY_DATA:
+- false: no importa app/registros.json al iniciar (recomendado para arranque limpio).
+- true: si la DB esta vacia, importa datos heredados una vez.
+
+Asegurar permisos del .env:
+  sudo chown www-data:www-data /opt/registro-academico/.env
+  sudo chmod 640 /opt/registro-academico/.env
+
+Verificacion:
+  sudo -u www-data head -n 5 /opt/registro-academico/.env
+
+========================================================================
+6) FASE E - PRUEBA DIRECTA DE APP SIN APACHE (OBLIGATORIA)
+========================================================================
+
+Objetivo:
+- Confirmar primero que Flask+Gunicorn+PostgreSQL funciona internamente.
+
+6.1 Prueba con servidor de desarrollo Flask
+-------------------------------------------
+Terminal 1 (EN VM):
+  sudo -u www-data bash -lc 'cd /opt/registro-academico && set -a && . ./.env && set +a && .venv/bin/python main.py'
+
+Terminal 2 (EN VM):
+  curl http://127.0.0.1:8000/health
+
+Que esperar:
+- JSON: {"status":"ok","database":"up"}
+
+Si esto falla, NO sigas a Apache hasta resolverlo.
+
+6.2 Verificar tablas auto-creadas
+---------------------------------
+Comando EN VM:
+  sudo -u postgres psql -d registro_academico -c "\dt"
+
+Que esperar:
+- Tablas: estudiantes y notas
+
+Detener prueba:
+- Ctrl + C en Terminal 1
+
+========================================================================
+7) FASE F - SERVICIO SYSTEMD (ARRANQUE AUTOMATICO DE LA APP)
+========================================================================
+
+7.1 Instalar servicio
+---------------------
+Comandos EN VM:
+  sudo cp /opt/registro-academico/deploy/registro-academico.service /etc/systemd/system/
+  sudo systemctl daemon-reload
+  sudo systemctl enable --now registro-academico
+  sudo systemctl status registro-academico --no-pager
+
+Que hace:
+- Levanta Gunicorn como servicio del sistema.
+- Arranca automaticamente despues de reinicio.
+
+Verificacion:
+  curl http://127.0.0.1:8000/health
+
+Debe responder ok.
+
+========================================================================
+8) FASE G - CONFIGURAR APACHE2 COMO REVERSE PROXY
+========================================================================
+
+8.1 Habilitar modulos Apache necesarios
+---------------------------------------
+Comando EN VM:
+  sudo a2enmod proxy proxy_http headers
+
+Que hace:
+- Activa proxy HTTP y cabeceras para pasar trafico a Gunicorn.
+
+8.2 Instalar VirtualHost del proyecto
+-------------------------------------
+Comandos EN VM:
+  sudo cp /opt/registro-academico/deploy/apache-registro-academico.conf /etc/apache2/sites-available/registro-academico.conf
+  sudo nano /etc/apache2/sites-available/registro-academico.conf
+
+Editar esta linea:
+  ServerName 192.168.56.10
+
+Cambiarla por:
+- IP real de tu VM, o
+- dominio real (si tienes DNS)
+
+El archivo hace esto:
+- Sirve /static/ directo desde disco.
+- Reenvia lo demas a http://127.0.0.1:8000
+
+8.3 Activar sitio y reiniciar Apache
+------------------------------------
+Comandos EN VM:
+  sudo a2dissite 000-default.conf
+  sudo a2ensite registro-academico.conf
+  sudo apachectl configtest
+  sudo systemctl restart apache2
+  sudo systemctl status apache2 --no-pager
+
+Que esperar:
+- apachectl configtest -> Syntax OK
+- apache2 -> active (running)
+
+Verificacion interna:
+  curl http://127.0.0.1/health
+  curl -I http://127.0.0.1/static/styles.css
+
+========================================================================
+9) FASE H - ACCESO DESDE NAVEGADOR
+========================================================================
+
+Si VirtualBox esta en Bridged:
+- Abre en tu PC: http://<IP_VM>/
+
+Si VirtualBox esta en NAT con forwarding:
+- Abre en tu PC: http://127.0.0.1:8080/
+
+Verificacion final de app:
+- Carga interfaz HTML completa.
+- Cargan estilos y JS.
+- Endpoint /health responde.
+- Puedes crear registro y consultarlo.
+
+========================================================================
+10) DIFERENCIAS CLAVE: LOCAL VS VPS
+========================================================================
+
+Local PC:
+- Ejecutas python main.py manualmente.
+- Puede usar DB local del PC.
+- Rutas locales de usuario.
+
+VPS Ubuntu:
+- Servicio systemd: registro-academico
+- Apache2 delante de Gunicorn.
+- DB PostgreSQL dentro del VPS.
+- Ruta fija de app: /opt/registro-academico
+- Usuario de ejecucion: www-data
+
+Cambia en VPS:
+- DATABASE_URL (usuario/clave/db del VPS)
+- ServerName de Apache
+- Path del proyecto (/opt/registro-academico)
+
+Se mantiene:
+- Codigo de aplicacion
+- Dependencias Python
+- Endpoints (/ y /health)
+
+========================================================================
+11) CHECKLIST FINAL DE VERIFICACION
+========================================================================
+
+[ ] PostgreSQL activo:
+    sudo systemctl status postgresql --no-pager
+
+[ ] Servicio app activo:
+    sudo systemctl status registro-academico --no-pager
+
+[ ] Apache activo:
+    sudo systemctl status apache2 --no-pager
+
+[ ] Gunicorn escucha en 127.0.0.1:8000:
+    ss -tulpn | rg 8000
+
+[ ] Apache escucha en 0.0.0.0:80:
+    ss -tulpn | rg ':80'
+
+[ ] DB conectable y tablas creadas:
+    sudo -u postgres psql -d registro_academico -c "\dt"
+
+[ ] Health interno Gunicorn:
+    curl http://127.0.0.1:8000/health
+
+[ ] Health por Apache:
+    curl http://127.0.0.1/health
+
+[ ] Estatico por Apache:
+    curl -I http://127.0.0.1/static/styles.css
+
+[ ] App abre desde navegador del host.
+
+[ ] Reinicio de VM mantiene servicios:
+    sudo reboot
+    (al volver) systemctl status postgresql apache2 registro-academico --no-pager
+
+========================================================================
+12) SI ALGO FALLA (DEBUG PUNTUAL)
+========================================================================
+
+12.1 Apache no arranca o da 500/502
+-----------------------------------
+  sudo apachectl configtest
+  sudo systemctl status apache2 --no-pager
+  sudo journalctl -u apache2 -n 100 --no-pager
+  sudo tail -n 100 /var/log/apache2/registro-academico-error.log
+
+12.2 Servicio registro-academico cae
+------------------------------------
+  sudo systemctl status registro-academico --no-pager
+  sudo journalctl -u registro-academico -n 200 --no-pager
+
+Causas comunes:
+- .env faltante o mal configurado
+- DATABASE_URL incorrecta
+- permisos en /opt/registro-academico/storage/reportes
+
+12.3 PostgreSQL no conecta
+--------------------------
+  sudo systemctl status postgresql --no-pager
+  sudo journalctl -u postgresql -n 100 --no-pager
+  sudo -u postgres psql -lqt | rg registro_academico
+  sudo -u postgres psql -c "\du" | rg registro_user
+
+12.4 Puerto/red no accesible desde host
+---------------------------------------
+  ip -4 addr show
+  sudo ufw status
+  ss -tulpn | rg ':80|:8000|:5432'
+
+Si usas NAT:
+- Verifica reglas de Port Forwarding en VirtualBox.
+
+12.5 Permisos
+-------------
+  ls -ld /opt/registro-academico
+  ls -ld /opt/registro-academico/storage
+  ls -ld /opt/registro-academico/storage/reportes
+  ls -l /opt/registro-academico/.env
+
+Fix rapido recomendado:
+  sudo chown -R www-data:www-data /opt/registro-academico
+  sudo chmod -R 775 /opt/registro-academico/storage
+  sudo chmod 640 /opt/registro-academico/.env
+
+========================================================================
+13) COMANDOS DE OPERACION DIARIA
+========================================================================
+
+Ver estado:
+  sudo systemctl status registro-academico apache2 postgresql --no-pager
+
+Reiniciar app:
+  sudo systemctl restart registro-academico
+
+Reiniciar Apache:
+  sudo systemctl restart apache2
+
+Ver logs app:
+  sudo journalctl -u registro-academico -f
+
+Ver logs Apache:
+  sudo tail -f /var/log/apache2/registro-academico-error.log
+
+========================================================================
+FIN
+========================================================================

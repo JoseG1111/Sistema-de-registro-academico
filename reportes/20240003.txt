@@ -1,0 +1,13 @@
+REPORTE ACADEMICO INDIVIDUAL
+============================================================
+Codigo: 20240003
+Nombre: Carla Ruiz
+Fecha de generacion: 2026-03-27 18:50:51
+
+Materias registradas:
+- Arquitectura de Software: 9.10
+- Base de Datos: 10.00
+- Redes: 9.40
+
+Promedio general: 9.50
+Estado academico: Aprobado
